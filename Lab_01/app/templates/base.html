@@ -14,16 +14,15 @@
 
     <title>
         {% if title %}
-          {{ title }}
+        {{ title }}
         {% else %}
-          Лабораторная работа № 1
+        Лабораторная работа № 1
         {% endif %}
     </title>
 </head>
 
-<body class="h-100">
-
-    <div class="h-100 d-flex flex-column">
+<body> 
+    <div class="d-flex flex-column h-100">
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="{{ url_for('index') }}">Лабораторная работа № 1</a>
@@ -45,14 +44,17 @@
                 </div>
             </div>
         </nav>
-    
+
         <div class="container my-5">
             {% block content %}
-              <h1>Содержимое по умолчанию</h1>
+            <h1>Содержимое по умолчанию</h1>
             {% endblock %}
         </div>
-    </div>
 
+        <footer class="p-3 text-center bg-dark mt-auto">
+            <h3 class="text-light">Барышников С.С. 191-351</h3>
+        </footer>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

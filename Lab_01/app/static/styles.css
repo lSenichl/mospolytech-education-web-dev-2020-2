@@ -9,3 +9,7 @@ body {
 .avatar {
     max-width: 100%;
 }
+
+.vsc-initialized {
+    height: 100%;
+}
