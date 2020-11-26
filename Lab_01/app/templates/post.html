@@ -30,9 +30,9 @@
         </div>
     </div>
 
-    <div class="card col-md-12">
+    <div class="card mt-3 pt-3 col-md-12">
         {% for comment in post.comments %}
-        <div class="card media mt-2 p-3">
+        <div class="card media mb-3 p-3">
             <img class="mr-3 pb-2" src="{{ url_for('static', filename='images/av2.jpg') }}" alt="Generic placeholder image">
             <div class="media-body">
                 <h5 class="mt-0">{{ comment.author }}</h5>
