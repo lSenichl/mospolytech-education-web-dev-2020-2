@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Калькулятор</h1>
+
+    <form class="form-inline">
+        <input type="text" name="operand1" class="form-control mr-2" value="{{ request.args.get('operand1', '') }}">
+        <select name="operation" id="operation" class="form-control mr-2">
+            {% for operation in operations %}
+                <option {% if request.args.get('operation') == operation%} selected {% endif %}>{{ operation }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="operand2" class="form-control mr-2" value="{{ request.args.get('operand2', '') }}">
+
+        <button type="submit" class="btn btn-primary mr-2">=</button>
+    </form>
+
+    {% if result %}
+        <input type="text" name="operand3" class="form-control mr2" value="{{ result }}" disabled>
+    {% endif %}
+
+{% endblock %}
