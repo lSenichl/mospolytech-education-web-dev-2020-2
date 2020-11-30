@@ -94,6 +94,8 @@ def tel():
     signs = 0
     msg_error = ''
     length = 0
+    new_teleph = ''
+    right_teleph = ''
 
     if teleph != '': 
         teleph = teleph.replace(' ', '')
@@ -107,6 +109,15 @@ def tel():
             msg_error = 'Недопустимый ввод. В номере телефона встречаются недопустимые символы.'
         if ((teleph[0] == '+' and teleph[1] == '7') or teleph[0] == '8') and (numbers not in [10, 11]):
             msg_error = 'Недопустимый ввод. Неверное количество цифр.'
-    
+        if numbers not in [10, 11]:
+            msg_error = 'Недопустимый ввод. Неверное количество цифр.'
+        if msg_error == '':
+            new_teleph = [int(num) for num in filter(lambda num: num.isnumeric(), teleph)]
+            if new_teleph[0] == 7:
+                new_teleph[0] = 8
+            for t in new_teleph:
+                right_teleph = right_teleph + str(t)
+            right_teleph = right_teleph[0] + '-' + right_teleph[1:4] + '-' + right_teleph[4:7] + '-' + right_teleph[7:9] + '-'+ right_teleph[9:11]
 
-    return render_template('tel.html', title=title, teleph=teleph, msg_error=msg_error, telephone=telephone)
+
+    return render_template('tel.html', title=title, teleph=teleph, msg_error=msg_error, telephone=telephone, new_teleph=new_teleph, right_teleph=right_teleph)
