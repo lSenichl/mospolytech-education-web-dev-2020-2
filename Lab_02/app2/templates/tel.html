@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Проверка телефона</h1>
+
+<form class="form-inline mt-5">
+    <input type="text" name="telephone" id="telephone" class="form-control mr-2 col-md-4 {% if msg_error != '' %} is-invalid {% endif %} {% if msg_error == '' and telephone != '' %} is-valid {% endif %}" value="{{ telephone }}">
+    <button type="submit" class="btn btn-primary mr-2">Проверить</button>
+    <div class="invalid-feedback">{{ msg_error }}</div>
+    <div class="valid-feedback">Номер верный!</div>
+</form>
+
+{% endblock %}

@@ -49,6 +49,9 @@
                         <li class="nav-item {% if request.endpoint == 'calc' %}active{% endif %}">
                             <a class="nav-link" href="{{ url_for('calc') }}">Калькулятор</a>
                         </li>
+                        <li class="nav-item {% if request.endpoint == 'tel' %}active{% endif %}">
+                            <a class="nav-link" href="{{ url_for('tel') }}">Проверка телефона</a>
+                        </li>
                     </ul>
                 </div>
             </div>
