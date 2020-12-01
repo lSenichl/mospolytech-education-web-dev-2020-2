@@ -89,8 +89,6 @@ def calc():
 @app2.route('/tel', methods=['GET', 'POST'])
 def tel():
     title = 'Проверка телефона'
-    teleph = request.args.get('telephone', '')
-    telephone = request.args.get('telephone', '')
     numbers = 0
     signs = 0
     msg_error = ''
