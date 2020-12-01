@@ -19,7 +19,7 @@
         {% endif %}
     </form>
 
-    {% if error_msg %}
+    {% if error_msg != '' or error_msg == None %}
         <p style="color: red;">{{ error_msg }}</p>
     {% endif %}
 

@@ -71,7 +71,7 @@ def calc():
     title = 'Калькулятор'
     try:
         result = None
-        error_msg = None
+        error_msg = ''
         op1 = float(request.args.get('operand1', 0))
         op2 = float(request.args.get('operand2', 0))
         f = operations_function[request.args.get('operation')]
@@ -82,14 +82,15 @@ def calc():
         error_msg = "На ноль делить нельзя"
     except KeyError:
         error_msg = "Недопустимая операция"
-
+    if op1 == 0 and op2 == 0:
+        error_msg = ''
     return render_template('calc.html', title=title,  operations=operations, result=result, error_msg=error_msg)
 
 @app2.route('/tel', methods=['GET', 'POST'])
 def tel():
     title = 'Проверка телефона'
-    teleph = str(request.args.get('telephone', ''))
-    telephone = str(request.args.get('telephone', ''))
+    teleph = str(request.form['telephone'])
+    telephone = str(request.form['telephone'])
     numbers = 0
     signs = 0
     msg_error = ''
