@@ -89,8 +89,8 @@ def calc():
 @app2.route('/tel', methods=['GET', 'POST'])
 def tel():
     title = 'Проверка телефона'
-    teleph = str(request.form['telephone'])
-    telephone = str(request.form['telephone'])
+    teleph = request.args.get('telephone', '')
+    telephone = request.args.get('telephone', '')
     numbers = 0
     signs = 0
     msg_error = ''
@@ -98,27 +98,31 @@ def tel():
     new_teleph = ''
     right_teleph = ''
 
-    if teleph != '': 
-        teleph = teleph.replace(' ', '')
-        length = len(teleph)
-        for numb in teleph:
-            if numb in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-                numbers = numbers + 1
-            if numb in ['(', ')', '-', '.', '+']:
-                signs = signs + 1
-        if numbers + signs != length:
-            msg_error = 'Недопустимый ввод. В номере телефона встречаются недопустимые символы.'
-        if ((teleph[0] == '+' and teleph[1] == '7') or teleph[0] == '8') and (numbers not in [10, 11]):
-            msg_error = 'Недопустимый ввод. Неверное количество цифр.'
-        if numbers not in [10, 11]:
-            msg_error = 'Недопустимый ввод. Неверное количество цифр.'
-        if msg_error == '':
-            new_teleph = [int(num) for num in filter(lambda num: num.isnumeric(), teleph)]
-            if new_teleph[0] == 7:
-                new_teleph[0] = 8
-            for t in new_teleph:
-                right_teleph = right_teleph + str(t)
-            right_teleph = right_teleph[0] + '-' + right_teleph[1:4] + '-' + right_teleph[4:7] + '-' + right_teleph[7:9] + '-'+ right_teleph[9:11]
-
+    if request.method == 'POST':
+        teleph = str(request.form['telephone'])
+        telephone = str(request.form['telephone'])
+        if teleph != '': 
+            teleph = teleph.replace(' ', '')
+            length = len(teleph)
+            for numb in teleph:
+                if numb in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+                    numbers = numbers + 1
+                if numb in ['(', ')', '-', '.', '+']:
+                    signs = signs + 1
+            if numbers + signs != length:
+                msg_error = 'Недопустимый ввод. В номере телефона встречаются недопустимые символы.'
+            if ((teleph[0] == '+' and teleph[1] == '7') or teleph[0] == '8') and (numbers not in [10, 11]):
+                msg_error = 'Недопустимый ввод. Неверное количество цифр.'
+            if numbers not in [10, 11]:
+                msg_error = 'Недопустимый ввод. Неверное количество цифр.'
+            if msg_error == '':
+                new_teleph = [int(num) for num in filter(lambda num: num.isnumeric(), teleph)]
+                if new_teleph[0] == 7:
+                    new_teleph[0] = 8
+                for t in new_teleph:
+                    right_teleph = right_teleph + str(t)
+                right_teleph = right_teleph[0] + '-' + right_teleph[1:4] + '-' + right_teleph[4:7] + '-' + right_teleph[7:9] + '-'+ right_teleph[9:11]
+    else:
+        telephone=str(request.args.get('telephone', ''))
 
     return render_template('tel.html', title=title, teleph=teleph, msg_error=msg_error, telephone=telephone, new_teleph=new_teleph, right_teleph=right_teleph)
