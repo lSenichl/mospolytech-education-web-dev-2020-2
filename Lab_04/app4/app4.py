@@ -188,4 +188,12 @@ def update(user_id):
 @app4.route('/users/<int:user_id>/delete', methods=['POST'])
 @login_required
 def delete(user_id):
+    with mysql.connection.cursor(named_tuple=True) as cursor:
+        try:
+            cursor.execute('DELETE FROM users WHERE id = %s;', (user_id,))
+        except connector.errors.DatabaseError as err:
+            flash('Не удалось удалить запись.', 'danger')
+            return redirect(url_for('users'))
+        mysql.connection.commit()
+        flash('Запись была успешно удалена.', 'success')
     return redirect(url_for('users'))
