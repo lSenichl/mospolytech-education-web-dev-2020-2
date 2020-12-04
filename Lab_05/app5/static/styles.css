@@ -1,0 +1,27 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+.vsc-initalized {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.footer {
+    flex: 0 0 auto;
+}
+
+.avatar {
+    max-width: 100%;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
