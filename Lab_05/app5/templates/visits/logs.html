@@ -1,5 +1,5 @@
 {% extends 'visits/base.html' %}
-{% from 'users/form.html' import render_user_form %}
+{% from 'pagination.html' import render_pagination %}
 
 {% block tab_content %}
 
@@ -31,5 +31,7 @@
             {% endfor %}
         </tbody>
     </table>
+
+    {{ render_pagination(request.endpoint, pagination_info) }}
 
 {% endblock %}
