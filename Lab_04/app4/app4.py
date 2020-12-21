@@ -126,7 +126,10 @@ def create():
     first_name = request.form.get('first_name') or None
     last_name = request.form.get('last_name') or None
     middle_name = request.form.get('middle_name') or None
-    role_id = request.form.get('role_id') or None
+    try:
+        role_id = int(request.form.get('role_id'))
+    except ValueError:
+        role_id = None
     query = '''
         INSERT INTO users (login, password_hash, first_name, last_name, middle_name, role_id)
         VALUES (%s, SHA2(%s, 256), %s, %s, %s, %s);
@@ -159,7 +162,10 @@ def update(user_id):
     first_name = request.form.get('first_name') or None
     last_name = request.form.get('last_name') or None
     middle_name = request.form.get('middle_name') or None
-    role_id = request.form.get('role_id') or None
+    try:
+        role_id = int(request.form.get('role_id'))
+    except ValueError:
+        role_id = None
     query = '''
         UPDATE users SET login=%s, first_name=%s, last_name=%s, middle_name=%s, role_id=%s
         WHERE id=%s;
