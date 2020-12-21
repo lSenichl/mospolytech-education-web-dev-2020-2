@@ -37,6 +37,9 @@
                         <li class="nav-item {% if request.endpoint == 'users' %}active{% endif %}">
                             <a class="nav-link" href="{{ url_for('users') }}">Пользователи</a>
                         </li>
+                        <li class="nav-item {% if request.endpoint == 'visits.logs' or request.endpoint == 'visits.pages_stat' or request.endpoint == 'visits.users_stat' %}active{% endif %}">
+                            <a class="nav-link" href="{{ url_for('visits.logs') }}">Журнал посещений</a>
+                        </li>
                         <li class="nav-item">
                             {% if current_user.is_authenticated %}
                             <div class="dropdown show">

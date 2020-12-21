@@ -6,7 +6,7 @@
             <input class="form-control" type="text" name="login" id="login" value="{{ user.login or '' }}">
         </div>
     </div>
-    {% if request.endpoint == 'new' %}
+    {% if request.endpoint == 'new' or request.endpoint == 'create' %}
     <div class="form-group row">
         <label for="password" class="col-form-label col-md-2">Пароль</label>
         <div class="col-md-6">

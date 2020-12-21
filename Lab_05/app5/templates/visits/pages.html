@@ -1,0 +1,24 @@
+{% extends 'visits/base.html' %}
+{% from 'users/form.html' import render_user_form %}
+
+{% block tab_content %}
+
+    <h3 class="my-5">Статистика посещений по страницам</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Пользователь</th>
+                <th>Страница</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+                
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
