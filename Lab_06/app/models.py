@@ -7,7 +7,7 @@ import markdown
 from app import db
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'users4'
+    __tablename__ = 'lab6_users'
 
     id = db.Column(db.Integer, primary_key=True)
     last_name = db.Column(db.String(100), nullable=False)
@@ -16,7 +16,8 @@ class User(db.Model, UserMixin):
     login = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=sa.sql.func.now())
-    role_id = db.Column(db.Integer, db.ForeignKey('roles4.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('lab6_roles.id'))
+    review = db.relationship('Review', backref='user')
 
     def __repr__(self):
         return '<User %r>' % self.login
@@ -33,7 +34,7 @@ class User(db.Model, UserMixin):
 
 
 class Role(db.Model):
-    __tablename__ = 'roles4'
+    __tablename__ = 'lab6_roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     desc = db.Column(db.Text())
@@ -42,7 +43,7 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 class Category(db.Model):
-    __tablename__ = 'categories'
+    __tablename__ = 'lab6_categories'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
@@ -51,7 +52,7 @@ class Category(db.Model):
         return '<Category %r>' % self.name
 
 class Image(db.Model):
-    __tablename__ = 'images'
+    __tablename__ = 'lab6_images'
 
     id = db.Column(db.String(36), primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
@@ -76,7 +77,7 @@ class Image(db.Model):
 
 
 class Course(db.Model):
-    __tablename__ = 'courses'
+    __tablename__ = 'lab6_courses'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -84,9 +85,9 @@ class Course(db.Model):
     full_desc = db.Column(db.Text(), nullable=False)
     rating_sum = db.Column(db.Integer, default=0)
     rating_num = db.Column(db.Integer, default=0)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-    background_image_id = db.Column(db.String(36), db.ForeignKey('images.id'))
-    author_id = db.Column(db.Integer, db.ForeignKey('users4.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('lab6_categories.id'))
+    background_image_id = db.Column(db.String(36), db.ForeignKey('lab6_images.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('lab6_users.id'))
     created_at = db.Column(db.DateTime, nullable=False, server_default=sa.sql.func.now())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=sa.sql.func.now())
 
@@ -94,6 +95,7 @@ class Course(db.Model):
     bg_image = db.relationship('Image')
     themes = db.relationship('Theme', backref='course')
     author = db.relationship('User')
+    reviews = db.relationship('Review', backref='course')
 
     def __repr__(self):
         return '<Course %r>' % self.name
@@ -106,38 +108,47 @@ class Course(db.Model):
             return 0
 
 class Theme(db.Model):
-    __tablename__ = 'themes'
+    __tablename__ = 'lab6_themes'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    parent_id = db.Column(db.Integer, db.ForeignKey('themes.id'))
-    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('lab6_themes.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('lab6_courses.id'))
 
     subthemes = db.relationship('Theme')
     steps = db.relationship('Step', backref='theme')
 
 class Step(db.Model):
-    __tablename__ = 'steps'
+    __tablename__ = 'lab6_steps'
 
     id = db.Column(db.Integer, primary_key=True)
     content_type = db.Column(db.String(100), nullable=False)
-    theme_id = db.Column(db.Integer, db.ForeignKey('themes.id'), nullable=False)
+    theme_id = db.Column(db.Integer, db.ForeignKey('lab6_themes.id'), nullable=False)
 
     page = db.relationship('Page', backref='step', uselist=False)
 
 class Page(db.Model):
-    __tablename__ = 'pages'
+    __tablename__ = 'lab6_pages'
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text(), nullable=False)
-    step_id = db.Column(db.Integer, db.ForeignKey('steps.id'), nullable=False, unique=True)
+    step_id = db.Column(db.Integer, db.ForeignKey('lab6_steps.id'), nullable=False, unique=True)
 
     @property
     def html(self):
         return markdown.markdown(self.text)
 
 
+class Review(db.Model):
+    __tablename__ = 'lab6_reviews'
 
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer, nullable=False)
+    text = db.Column(db.Text(), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=sa.sql.func.now())
 
+    course_id = db.Column(db.Integer, db.ForeignKey('lab6_courses.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('lab6_users.id'))
 
-
+    def __repr__(self):
+        return '<Review %r>' % self.name

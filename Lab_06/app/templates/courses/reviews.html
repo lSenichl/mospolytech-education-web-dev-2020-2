@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% from 'pagination.html' import render_pagination %}
+
+{% block content %}
+<div class="container mt-5">
+    <section class="comments mb-5">
+        <h2 class="mb-3 text-center text-uppercase font-weight-bold">Комментарии</h2>
+        <div class="my-2">
+            <div class="container">
+            <form class="mb-5 mt-3 align-items-center">      
+                <div class="row w-100">
+                    <div class=" w-100">
+                        <input hidden value="{{ course.id }}" name="course_id" >
+                        <select class="form-control selectpicker" data-live-search="true" id="sort_by" name="sort_by" title="Выбрать фильтр">
+                            <option value="created_at" {% if 'created_at' in request.args.getlist('sort_by') %} selected {% elif not request.args.getlist('sort_by') %} selected{% endif %}>По новизне</option>
+                            <option value="rating_asc" {% if 'rating_asc' in request.args.getlist('sort_by') %}selected{% endif %}>Сначала отрицательные</option>
+                            <option value="rating_desc" {% if 'rating_desc' in request.args.getlist('sort_by') %}selected{% endif %}>Сначала положительные</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="row w-100 mt-2">
+                    <div class=" w-100">
+                        <button type="submit" class="btn btn-primary w-100 mt-auto">Найти</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% for review in rewiews %}
+            <div class="card mt-3">
+                <h5 class="card-header">{{ review.user.full_name }}</h5>
+                <div class="card-body">
+                    <p class="card-text">{{ review.text }}</p>
+                    <h3><span class="badge badge-secondary">★ {{ review.rating }}</span></h3>
+                    <div class="text-muted mt-2">{{ review.created_at }}</div>
+                </div>
+            </div>
+        {% endfor %}
+        {% if current_user.is_authenticated and cur %}
+            <div class="card mt-3 text-right">
+                <h5 class="card-header">Ваш комментарий</h5>
+                <div class="card-body">
+                    <p class="card-text">{{ cur.text }}</p>
+                    <h3><span class="badge badge-secondary">★ {{ cur.rating }}</span></h3>
+                    <div class="text-muted mt-2">{{ cur.created_at }}</div>
+                </div>
+            </div>
+        {% else %}
+            {% if current_user.is_authenticated %}
+            <div class="card mt-3 text-right">
+                <h5 class="card-header">Ваш комментарий</h5>
+                <div class="card-body">
+                    <form class="w-100" method="POST" action="{{ url_for('courses.reviews', course_id=course.id) }}">
+                        <div class="form-group">
+                            <textarea class="form-control" name="text"  cols="20" rows="3"></textarea>
+                        </div>
+                        <input type="hidden" name="user_id" value="{{ current_user.id }}">
+                        <input type="hidden" name="course_id" value="{{ course.id }}">
+                        <div class="form-group">
+                            <label for="FormControlSelect1">Оценка курса</label>
+                            <select class="form-control" id="FormControlSelect1" name="rating">
+                              <option selected value="5">Отлично</option>
+                              <option value="4">Хорошо</option>
+                              <option value="3">Удовлетворительно</option>
+                              <option value="2"> Неудовлетворительно</option>
+                              <option value="1">Плохо</option>
+                              <option value="0">Ужасно</option>
+                            </select>
+                          </div>
+                        <div class="form-group text-right">
+                            <input class="btn btn-primary w-100" type="submit" value="Оставить комментарий">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
+    </section>
+    <div class="mb-5">
+        {{ render_pagination(pagination, request.endpoint, search_params) }}
+    </div>
+</div>
+{% endblock %}

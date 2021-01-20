@@ -3,7 +3,7 @@ from uuid import uuid4
 from flask import url_for, current_app
 import hashlib
 from werkzeug.utils import secure_filename
-from models import Theme, Image, Course
+from models import Theme, Image, Course, Review
 
 from app import db
 
@@ -57,6 +57,28 @@ class CoursesFilter:
     def __filter_by_category(self):
         if self.category_ids:
             self.query = self.query.filter(Course.category_id.in_(self.category_ids))
+
+
+class ReviewsFilter:
+    def __init__(self, sort_by, course_id):
+        self.sort_by = sort_by
+        self.course_id = course_id
+        self.query = Review.query
+
+    def perform(self):
+        self.__filter_by_sort_by()
+        return self.query
+
+    def __filter_by_sort_by(self):
+        if self.sort_by == 'created_at':
+            self.query = self.query.order_by(Review.created_at.desc())
+        elif self.sort_by == 'rating_asc':
+            self.query = self.query.order_by(Review.rating.asc())
+        elif self.sort_by == 'rating_desc':
+            self.query = self.query.order_by(Review.rating.desc())
+        else:
+            self.query = self.query.order_by(Review.created_at.desc())
+    
 
 class Navigator:
     def __init__(self, course, theme=None, current_step=None):

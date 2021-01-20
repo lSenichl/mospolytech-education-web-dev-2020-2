@@ -1,25 +1,36 @@
 import os
 import bleach
 from flask import Blueprint, render_template, redirect, url_for, request, current_app, flash
-from flask_login import login_required
-from tools import Navigator, ImageSaver, CoursesFilter
-from models import Course, Category, Image, Theme, User, Step, Page
+from flask_login import login_required, current_user
+from tools import Navigator, ImageSaver, CoursesFilter, ReviewsFilter
+from models import Course, Category, Image, Theme, User, Step, Page, Review
 
 from app import db
 
 bp = Blueprint('courses', __name__, url_prefix='/courses')
 
 PERMITTED_PARAMS = ['name', 'category_id', 'short_desc', 'full_desc', 'author_id']
+PERMITTED_REVIEW_PARAMS = ['user_id', 'course_id', 'text', 'rating']
 
-PER_PAGE = 3
+PER_PAGE = 5
 
 def params():
     return { p: request.form.get(p) for p in PERMITTED_PARAMS }
+
+
+def review_params():
+    return { p: request.form.get(p) for p in PERMITTED_REVIEW_PARAMS }
 
 def search_params():
     return {
         'name': request.args.get('name'),
         'category_ids': request.args.getlist('category_ids')
+    }
+
+def search_review_params(course_id):
+    return {
+        'sort_by': request.args.get('sort_by'),
+        'course_id': course_id
     }
 
 @bp.route('/')
@@ -38,6 +49,7 @@ def index():
         pagination=pagination,
         search_params=search_params(),
     )
+
 
 @bp.route('/new')
 @login_required
@@ -70,10 +82,34 @@ def create():
 
     return redirect(url_for('courses.index'))
 
-@bp.route('/<int:course_id>')
+@bp.route('/<int:course_id>', methods=['GET','POST'])
 def show(course_id):
     course = Course.query.get(course_id)
-    return render_template('courses/show.html', course=course)
+
+    if request.method == "POST":
+        review = Review(**review_params())
+        db.session.add(review)
+        db.session.commit()
+        course.rating_num = course.rating_num+1
+        course.rating_sum = course.rating_sum+int(request.form.get('rating'))
+        db.session.add(course)
+        db.session.commit()
+        flash("Отзыв успешно оставлен", "success")
+        
+        return  redirect(url_for('courses.show',course_id=course_id, course=course))
+
+    ncur = []
+    cur = None
+    for review in course.reviews:
+        if current_user.is_authenticated:
+            if current_user.id != review.user_id:
+                ncur.append(review)
+            else:
+                cur = review
+        else:
+            ncur = course.reviews
+
+    return render_template('courses/show.html', course=course, ncur=ncur, cur=cur)
 
 @bp.route('/<int:course_id>/themes/create', methods=['POST'])
 @login_required
@@ -148,4 +184,47 @@ def show_content(course_id, theme_id=None):
         step=step, 
         theme=theme, 
         navigator=navigator,
+    )
+
+
+@bp.route('<int:course_id>/reviews', methods=['GET','POST'])
+def reviews(course_id):
+    course = Course.query.get(course_id)
+    
+    if request.method == "POST":
+        review = Review(**review_params())
+        db.session.add(review)
+        db.session.commit()
+        course.rating_num = course.rating_num+1
+        course.rating_sum = course.rating_sum+int(request.form.get('rating'))
+        db.session.add(course)
+        db.session.commit()
+        flash("Отзыв успешно оставлен", "success")
+
+        return  redirect(url_for('courses.reviews',course_id=course_id, course=course))
+
+
+    page = request.args.get('page', 1, type=int)
+    review_filter = ReviewsFilter(**search_review_params(course_id))
+    rewiews = review_filter.perform()
+
+    cur = None
+    for review in rewiews:
+        if current_user.is_authenticated:
+            if current_user.id == review.user_id:
+                cur = review
+
+    if current_user.is_authenticated and cur:
+        rewiews = rewiews.filter(Review.user_id != cur.user_id)
+    pagination = rewiews.paginate(page, PER_PAGE)
+    rewiews = pagination.items
+
+    return render_template(
+        '/courses/reviews.html', 
+        course=course, 
+        rewiews=rewiews,
+        cur=cur,
+        pagination=pagination,
+        search_params=search_review_params(course_id),
+        course_id=course_id
     )
